@@ -1,4 +1,6 @@
-import { NextResponse } from 'next/server';
+import os
+
+code = '''import { NextResponse } from 'next/server';
 import { Pool } from '@neondatabase/serverless';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -13,12 +15,14 @@ export async function GET(request: Request) {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
   try {
+    // Basic setup if no query is provided
     if (!query) {
+      // Just check if the table exists
       const tableCheck = await pool.query(
-        "SELECT EXISTS (" +
-        "  SELECT FROM information_schema.tables " +
-        "  WHERE table_name = 'stories_embedding'" +
-        ");"
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_name = 'stories_embedding'
+        );
       );
       
       const isReady = tableCheck.rows[0].exists;
@@ -36,16 +40,19 @@ export async function GET(request: Request) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
 
+    // Generate an embedding for the user's search query
     const result = await model.embedContent(query);
     const embedding = result.embedding.values;
 
+    // Search the database using the pgvector <-> operator (L2 distance)
+    // We order by distance ascending (closest first) and limit to top 3 results.
     const searchResults = await pool.query(
-      "SELECT story_id, title, excerpt, " +
-      "       1 - (embedding <=> ) as similarity " +
-      "FROM stories_embedding " +
-      "ORDER BY embedding <=>  " +
-      "LIMIT 3;",
-      ["[" + embedding.join(',') + "]"]
+      SELECT story_id, title, excerpt, 
+              1 - (embedding <=> ) as similarity 
+       FROM stories_embedding 
+       ORDER BY embedding <=>  
+       LIMIT 3;,
+      [[]]
     );
 
     return NextResponse.json({
@@ -58,3 +65,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+'''
+
+with open('app/api/search/route.ts', 'w', encoding='utf-8') as f:
+    f.write(code)
