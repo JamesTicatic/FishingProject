@@ -8,8 +8,11 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
   const [selectedSpecies, setSelectedSpecies] = useState('All');
 
   const filteredStories = selectedSpecies === 'All' 
-    ? initialStories 
+    ? [...initialStories] 
     : initialStories.filter(story => story.species.includes(selectedSpecies));
+
+  // Sort descending (newest first)
+  filteredStories.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 mb-8">

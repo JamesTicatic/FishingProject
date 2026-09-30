@@ -44,6 +44,7 @@ export async function GET(request: Request) {
       "  title TEXT NOT NULL," +
       "  excerpt TEXT NOT NULL," +
       "  species TEXT[]," +
+      "  date DATE," +
       "  embedding vector(3072)" +
       ");"
     );
@@ -58,15 +59,16 @@ export async function GET(request: Request) {
       const embedding = result.embedding.values;
       
       await pool.query(
-        "INSERT INTO stories_embedding (story_id, title, excerpt, species, embedding) " +
-        "VALUES ($1, $2, $3, $4, $5) " +
+        "INSERT INTO stories_embedding (story_id, title, excerpt, species, date, embedding) " +
+        "VALUES ($1, $2, $3, $4, $5, $6) " +
         "ON CONFLICT (story_id) " +
         "DO UPDATE SET " +
         "  title = EXCLUDED.title, " +
         "  excerpt = EXCLUDED.excerpt, " +
         "  species = EXCLUDED.species, " +
+        "  date = EXCLUDED.date, " +
         "  embedding = EXCLUDED.embedding;",
-        [story.id, story.title, story.excerpt, story.species, "[" + embedding.join(',') + "]"]
+        [story.id, story.title, story.excerpt, story.species, story.date, "[" + embedding.join(',') + "]"]
       );
       ingestedCount++;
     }
