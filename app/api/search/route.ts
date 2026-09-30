@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'embedding-001' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
     const result = await model.embedContent(query);
     const embedding = result.embedding.values;

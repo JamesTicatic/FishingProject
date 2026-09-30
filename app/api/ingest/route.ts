@@ -14,17 +14,17 @@ export async function GET(request: Request) {
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'embedding-001' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
   try {
     await pool.query('CREATE EXTENSION IF NOT EXISTS vector;');
     await pool.query(
-      "CREATE TABLE IF NOT EXISTS stories_embedding (" +
+      "DROP TABLE IF EXISTS stories_embedding;\n      CREATE TABLE IF NOT EXISTS stories_embedding (" +
       "  id SERIAL PRIMARY KEY," +
       "  story_id VARCHAR(255) UNIQUE NOT NULL," +
       "  title TEXT NOT NULL," +
       "  excerpt TEXT NOT NULL," +
-      "  embedding vector(768)" +
+      "  embedding vector(3072)" +
       ");"
     );
 
