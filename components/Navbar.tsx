@@ -24,10 +24,10 @@ export default function Navbar() {
               </svg>
             </div>
             <div>
-              <span className="font-bold text-lg tracking-tight block text-white group-hover:text-emerald-200 transition-colors">
+              <span className="font-bold text-base sm:text-lg tracking-tight block text-white group-hover:text-emerald-200 transition-colors">
                 Cast &amp; Catch Stories
               </span>
-              <span className="text-xs text-emerald-400 font-medium tracking-wide uppercase">
+              <span className="hidden sm:block text-xs text-emerald-400 font-medium tracking-wide uppercase">
                 The Angler&apos;s Field Journal
               </span>
             </div>
@@ -38,13 +38,13 @@ export default function Navbar() {
               href="/"
               className="text-sm font-medium text-emerald-100 hover:text-white transition-colors"
             >
-              Stories
+              Home
             </Link>
             <a
               href="/api/search"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 hover:text-white transition-colors border border-emerald-700/50"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 hover:text-white transition-colors border border-emerald-700/50"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Vector Search API
