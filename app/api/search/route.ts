@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       const tableCheck = await pool.query(
         "SELECT EXISTS (" +
         "  SELECT FROM information_schema.tables " +
-        "  WHERE table_name = 'stories_embedding'" +
+        "  WHERE table_name = 'story_chunks'" +
         ");"
       );
       
@@ -36,30 +36,23 @@ export async function GET(request: Request) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
-    const speciesFilter = searchParams.get('species');
-
     const result = await model.embedContent(query);
     const embedding = result.embedding.values;
 
-    let dbQuery = "";
-    let queryParams: any[] = [];
+    const dbQuery = `
+      WITH best_chunks AS (
+        SELECT DISTINCT ON (story_id) 
+          story_id, title, excerpt, chunk_text,
+          1 - (embedding <=> $1) as similarity
+        FROM story_chunks
+        ORDER BY story_id, embedding <=> $1
+      )
+      SELECT * FROM best_chunks
+      ORDER BY similarity DESC
+      LIMIT 3;
+    `;
     
-    if (speciesFilter && speciesFilter !== 'All') {
-      dbQuery = "SELECT story_id, title, excerpt, " +
-                "       1 - (embedding <=> $1) as similarity " +
-                "FROM stories_embedding " +
-                "WHERE $2 = ANY(species) " +
-                "ORDER BY embedding <=> $1 " +
-                "LIMIT 3;";
-      queryParams = ["[" + embedding.join(',') + "]", speciesFilter];
-    } else {
-      dbQuery = "SELECT story_id, title, excerpt, " +
-                "       1 - (embedding <=> $1) as similarity " +
-                "FROM stories_embedding " +
-                "ORDER BY embedding <=> $1 " +
-                "LIMIT 3;";
-      queryParams = ["[" + embedding.join(',') + "]"];
-    }
+    const queryParams = ["[" + embedding.join(',') + "]"];
 
     const searchResults = await pool.query(dbQuery, queryParams);
 

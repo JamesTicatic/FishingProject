@@ -70,50 +70,56 @@ export async function GET(request: Request) {
       );
     }
 
-    // Create Stories Embedding Table with species, gear, and location columns
+    // Create Story Chunks Table with species, gear, and location columns
     await pool.query(
-      "DROP TABLE IF EXISTS stories_embedding;\n      CREATE TABLE IF NOT EXISTS stories_embedding (" +
+      "DROP TABLE IF EXISTS stories_embedding;" // Clean up old table
+    );
+    await pool.query(
+      "DROP TABLE IF EXISTS story_chunks;\n      CREATE TABLE IF NOT EXISTS story_chunks (" +
       "  id SERIAL PRIMARY KEY," +
-      "  story_id VARCHAR(255) UNIQUE NOT NULL," +
+      "  story_id VARCHAR(255) NOT NULL," +
       "  title TEXT NOT NULL," +
       "  excerpt TEXT NOT NULL," +
       "  species TEXT[]," +
       "  gear TEXT[]," +
       "  location TEXT," +
       "  date DATE," +
+      "  chunk_index INT NOT NULL," +
+      "  chunk_text TEXT NOT NULL," +
       "  embedding vector(3072)" +
       ");"
     );
 
     const stories = getAllStories();
     let ingestedCount = 0;
+    let chunksCount = 0;
 
     for (const story of stories) {
-      const textToEmbed = "Title: " + story.title + "\nExcerpt: " + story.excerpt + "\nSpecies: " + story.species.join(', ') + "\nGear: " + story.gear.join(', ') + "\nLocation: " + story.location + "\nContent: " + story.content;
-      
-      const result = await model.embedContent(textToEmbed);
-      const embedding = result.embedding.values;
-      
-      await pool.query(
-        "INSERT INTO stories_embedding (story_id, title, excerpt, species, gear, location, date, embedding) " +
-        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) " +
-        "ON CONFLICT (story_id) " +
-        "DO UPDATE SET " +
-        "  title = EXCLUDED.title, " +
-        "  excerpt = EXCLUDED.excerpt, " +
-        "  species = EXCLUDED.species, " +
-        "  gear = EXCLUDED.gear, " +
-        "  location = EXCLUDED.location, " +
-        "  date = EXCLUDED.date, " +
-        "  embedding = EXCLUDED.embedding;",
-        [story.id, story.title, story.excerpt, story.species, story.gear, story.location, story.date, "[" + embedding.join(',') + "]"]
-      );
+      // Split content into paragraphs, filtering out empty ones
+      const paragraphs = story.content.split('\n\n').map(p => p.trim()).filter(Boolean);
+
+      for (let i = 0; i < paragraphs.length; i++) {
+        const paragraph = paragraphs[i];
+        
+        // Add minimal context to the chunk for better embeddings
+        const textToEmbed = "Story Title: " + story.title + "\nParagraph: " + paragraph;
+        
+        const result = await model.embedContent(textToEmbed);
+        const embedding = result.embedding.values;
+        
+        await pool.query(
+          "INSERT INTO story_chunks (story_id, title, excerpt, species, gear, location, date, chunk_index, chunk_text, embedding) " +
+          "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);",
+          [story.id, story.title, story.excerpt, story.species, story.gear, story.location, story.date, i, paragraph, "[" + embedding.join(',') + "]"]
+        );
+        chunksCount++;
+      }
       ingestedCount++;
     }
 
     return NextResponse.json({
       success: true,
-      message: "Successfully ingested " + ingestedCount + " stories into Postgres."
+      message: "Successfully ingested " + ingestedCount + " stories into " + chunksCount + " chunks."
     });
 
   } catch (error: any) {

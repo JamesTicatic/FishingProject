@@ -59,7 +59,7 @@ export default function SearchBar() {
               {results.map((res) => (
                 <li key={res.story_id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
                   <h4 className="font-medium text-emerald-800">{res.title}</h4>
-                  <p className="text-sm text-slate-600 mt-1 line-clamp-2">{res.excerpt}</p>
+                  <p className="text-sm text-slate-600 mt-2 italic line-clamp-3">"{res.chunk_text}"</p>
                   <div className="text-xs text-emerald-600 mt-2 font-medium">Similarity: {(res.similarity * 100).toFixed(1)}%</div>
                 </li>
               ))}
