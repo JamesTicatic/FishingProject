@@ -4,15 +4,18 @@ import StoryCard from './StoryCard';
 import { FishingStory } from '@/data/stories';
 import { SPECIES_LIST } from '@/data/species';
 import { GEAR_LIST } from '@/data/gear';
+import { LOCATION_LIST } from '@/data/locations';
 
 export default function StoryGrid({ initialStories }: { initialStories: FishingStory[] }) {
   const [selectedSpecies, setSelectedSpecies] = useState('All');
   const [selectedGear, setSelectedGear] = useState('All');
+  const [selectedLocation, setSelectedLocation] = useState('All');
 
   const filteredStories = initialStories.filter(story => {
     const matchesSpecies = selectedSpecies === 'All' || story.species.includes(selectedSpecies);
     const matchesGear = selectedGear === 'All' || story.gear.includes(selectedGear);
-    return matchesSpecies && matchesGear;
+    const matchesLocation = selectedLocation === 'All' || story.location === selectedLocation;
+    return matchesSpecies && matchesGear && matchesLocation;
   });
 
   // Sort descending (newest first)
@@ -58,6 +61,21 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
             <option value="All">All Gear</option>
             {GEAR_LIST.map((gear) => (
               <option key={gear} value={gear}>{gear}</option>
+            ))}
+          </select>
+
+          <label htmlFor="gridLocationFilter" className="sr-only">
+            Filter Location:
+          </label>
+          <select 
+            id="gridLocationFilter"
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+            className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-3 py-2 outline-none transition-colors"
+          >
+            <option value="All">All Locations</option>
+            {LOCATION_LIST.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
             ))}
           </select>
           <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">

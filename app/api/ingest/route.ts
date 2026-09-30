@@ -37,6 +37,14 @@ export async function GET(request: Request) {
       ");"
     );
 
+    // Create Location Table
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS location (" +
+      "  id SERIAL PRIMARY KEY," +
+      "  name VARCHAR(255) UNIQUE NOT NULL" +
+      ");"
+    );
+
     // Ingest Species List
     for (const speciesName of SPECIES_LIST) {
       await pool.query(
@@ -53,7 +61,16 @@ export async function GET(request: Request) {
       );
     }
 
-    // Create Stories Embedding Table with species and gear columns
+    // Ingest Location List
+    const { LOCATION_LIST } = await import('@/data/locations');
+    for (const locationName of LOCATION_LIST) {
+      await pool.query(
+        "INSERT INTO location (name) VALUES ($1) ON CONFLICT (name) DO NOTHING;",
+        [locationName]
+      );
+    }
+
+    // Create Stories Embedding Table with species, gear, and location columns
     await pool.query(
       "DROP TABLE IF EXISTS stories_embedding;\n      CREATE TABLE IF NOT EXISTS stories_embedding (" +
       "  id SERIAL PRIMARY KEY," +
@@ -62,6 +79,7 @@ export async function GET(request: Request) {
       "  excerpt TEXT NOT NULL," +
       "  species TEXT[]," +
       "  gear TEXT[]," +
+      "  location TEXT," +
       "  date DATE," +
       "  embedding vector(3072)" +
       ");"
@@ -77,17 +95,18 @@ export async function GET(request: Request) {
       const embedding = result.embedding.values;
       
       await pool.query(
-        "INSERT INTO stories_embedding (story_id, title, excerpt, species, gear, date, embedding) " +
-        "VALUES ($1, $2, $3, $4, $5, $6, $7) " +
+        "INSERT INTO stories_embedding (story_id, title, excerpt, species, gear, location, date, embedding) " +
+        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) " +
         "ON CONFLICT (story_id) " +
         "DO UPDATE SET " +
         "  title = EXCLUDED.title, " +
         "  excerpt = EXCLUDED.excerpt, " +
         "  species = EXCLUDED.species, " +
         "  gear = EXCLUDED.gear, " +
+        "  location = EXCLUDED.location, " +
         "  date = EXCLUDED.date, " +
         "  embedding = EXCLUDED.embedding;",
-        [story.id, story.title, story.excerpt, story.species, story.gear, story.date, "[" + embedding.join(',') + "]"]
+        [story.id, story.title, story.excerpt, story.species, story.gear, story.location, story.date, "[" + embedding.join(',') + "]"]
       );
       ingestedCount++;
     }

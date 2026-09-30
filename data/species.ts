@@ -6,5 +6,13 @@ export const SPECIES_LIST = [
   "Bluefish",
   "Blacktip Shark",
   "Flounder",
-  "Sheepshead"
+  "Sheepshead",
+  "Florida Pompano",
+  "Pinfish",
+  "Atlantic Mackerel",
+  "Pollock",
+  "Weakfish",
+  "Scup",
+  "Black Sea Bass",
+  "Dogfish"
 ];

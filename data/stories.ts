@@ -37,7 +37,7 @@ export const stories: FishingStory[] = [
   To top off an already unforgettable day, a school of massive sharks began cruising the rips. We managed to hook into a powerful blacktip shark, sending our gear into overdrive as it put on a clinic of lightning-fast directional shifts, raw power, and corkscrewing aerial jumps.
 
   Sharing a day like this with lifelong friends—building on a bond that’s lasted for years—is what saltwater fishing is all about. Watching that blacktip breach against the Carolina sky, surrounded by best friends, was a core memory locked in for a lifetime.`,
-    location: "Fort Fisher, North Carolina",
+    location: "Wrightsville Beach, North Carolina",
     species: [
       "Red Drum",
       "Black Drum",
@@ -79,7 +79,7 @@ export const stories: FishingStory[] = [
   Dropping straight down beside the pier pilings produced immediate hits from harbor pollock. But the real prize was casting out into the open current. Schools of Atlantic mackerel were tearing through the green tide, hammering the tiny sabiki quills and pulling with a surprising, bulldogging fury on the flimsy freshwater rod. Bringing in that first Maine mackerel was an honest, humble catch, but easily one of the most rewarding moments of the entire trip.
 
   Midway through the blitz, Dan’s borrowed reel jammed up—a classic mechanical slip inside the spincast hood. Fortunately, my time volunteering and repairing this exact tackle back home in Colorado paid off. I stripped the housing down, reseated the line catch mechanism, and had it humming again in minutes, officially earning my keep for the rod he’d handed me. It was simple dockside fishing at its absolute best: spontaneous, generous, and bound together by shared water.`,
-    location: "Maine State Pier, Portland, Maine",
+    location: "Portland, Maine",
     species: [
       "Atlantic Mackerel",
       "Pollock"
@@ -116,7 +116,7 @@ export const stories: FishingStory[] = [
   Then the surface erupted. Roving packs of mullet and rain minnows sprayed skyward as schools of heavy bluefish, spanish mackerel, and jack crevalle blitzed the pilings. Reels were screaming, plugs were firing into the whitewater, and rods were doubled over in every direction. 
 
   By afternoon, the surf calmed, the gear was packed, and that morning pompano made the journey up the road to become our centerpiece dinner in Raleigh. We laughed at how our survival skills would fail with such a small catch, but enjoyed every bite of the mild white flesh. Fishing beside Mom felt just like being a kid again—easily one of the best days on the water all summer.`,
-    location: "Johnnie Mercers Pier, Wrightsville Beach, North Carolina",
+    location: "Wrightsville Beach, North Carolina",
     species: [
       "Florida Pompano",
       "Bluefish",
@@ -156,7 +156,7 @@ export const stories: FishingStory[] = [
   From there, the high-low rig took over the morning. The scup bite was so furious that we abandoned jigging altogether so both of us could drop bait into the feeding frenzy. Mixed in with the porgies came a feisty dogfish and a small black sea bass, rounding out an impromptu Wareham River inshore slam.
 
   After a midday breather onshore, I pushed back out with cousin Sam to explore the 'secret passage'—a winding, narrow tidal gut snaking back through the salt marsh. The channel ran surprisingly deep, flanked by cordgrass and sheltering basking diamondback terrapins. We worked our way back out toward the deeper rip, picking up steady scup on the drop and daydreaming about what other migratory oddities might slip into this bay before summer closes.`,
-    location: "Swifts Beach, Wareham River, Massachusetts",
+    location: "Wareham, Massachusetts",
     species: [
       "Weakfish",
       "Scup",
