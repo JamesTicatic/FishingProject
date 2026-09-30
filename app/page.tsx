@@ -14,7 +14,7 @@ export default function HomePage() {
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-800/80 text-emerald-200 border border-emerald-600/40 mb-6 backdrop-blur-sm shadow-sm">
             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            OpenSearch Content Corpus Ready
+            Postgres Vector Search Ready
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">

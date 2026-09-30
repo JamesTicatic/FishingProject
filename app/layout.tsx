@@ -38,17 +38,17 @@ export default function RootLayout({
               <span className="font-bold text-slate-900">Cast &amp; Catch Stories</span>
               <span className="text-slate-400">|</span>
               <span className="text-xs text-slate-500">
-                Foundational Corpus for OpenSearch
+                Foundational Corpus for Postgres Vector Search
               </span>
             </div>
             <div className="flex items-center gap-6 text-xs">
               <a
-                href="/api/stories"
+                href="/api/search"
                 target="_blank"
                 rel="noreferrer"
                 className="text-emerald-700 hover:text-emerald-900 font-medium underline underline-offset-4"
               >
-                Stories JSON API Endpoint
+                Vector Search API
               </a>
               <span className="text-slate-400">© 2026 Field Journal Logs</span>
             </div>

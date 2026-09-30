@@ -41,13 +41,13 @@ export default function Navbar() {
               Stories
             </Link>
             <a
-              href="/api/stories"
+              href="/api/search"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 hover:text-white transition-colors border border-emerald-700/50"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              OpenSearch API
+              Vector Search API
             </a>
           </nav>
         </div>
