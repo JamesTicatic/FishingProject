@@ -149,15 +149,6 @@ export default async function StoryPage({ params }: PageProps) {
                 </svg>
                 Back to All Stories
               </Link>
-
-              <a
-                href="/api/stories"
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-emerald-700 hover:text-emerald-800 font-medium underline"
-              >
-                View this corpus in JSON API →
-              </a>
             </div>
           </article>
 
