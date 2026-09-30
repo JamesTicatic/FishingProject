@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+  const model = genAI.getGenerativeModel({ model: 'embedding-001' });
 
   try {
     await pool.query('CREATE EXTENSION IF NOT EXISTS vector;');
