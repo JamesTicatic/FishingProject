@@ -36,17 +36,32 @@ export async function GET(request: Request) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
+    const speciesFilter = searchParams.get('species');
+
     const result = await model.embedContent(query);
     const embedding = result.embedding.values;
 
-    const searchResults = await pool.query(
-      "SELECT story_id, title, excerpt, " +
-      "       1 - (embedding <=> $1) as similarity " +
-      "FROM stories_embedding " +
-      "ORDER BY embedding <=> $1 " +
-      "LIMIT 3;",
-      ["[" + embedding.join(',') + "]"]
-    );
+    let dbQuery = "";
+    let queryParams: any[] = [];
+    
+    if (speciesFilter && speciesFilter !== 'All') {
+      dbQuery = "SELECT story_id, title, excerpt, " +
+                "       1 - (embedding <=> $1) as similarity " +
+                "FROM stories_embedding " +
+                "WHERE $2 = ANY(species) " +
+                "ORDER BY embedding <=> $1 " +
+                "LIMIT 3;";
+      queryParams = ["[" + embedding.join(',') + "]", speciesFilter];
+    } else {
+      dbQuery = "SELECT story_id, title, excerpt, " +
+                "       1 - (embedding <=> $1) as similarity " +
+                "FROM stories_embedding " +
+                "ORDER BY embedding <=> $1 " +
+                "LIMIT 3;";
+      queryParams = ["[" + embedding.join(',') + "]"];
+    }
+
+    const searchResults = await pool.query(dbQuery, queryParams);
 
     return NextResponse.json({
       query: query,

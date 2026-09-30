@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+import { SPECIES_LIST } from '@/data/species';
+
 export default function SearchBar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
