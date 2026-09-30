@@ -41,9 +41,9 @@ export async function GET(request: Request) {
 
     const searchResults = await pool.query(
       "SELECT story_id, title, excerpt, " +
-      "       1 - (embedding <=> \) as similarity " +
+      "       1 - (embedding <=> $1) as similarity " +
       "FROM stories_embedding " +
-      "ORDER BY embedding <=> \ " +
+      "ORDER BY embedding <=> $1 " +
       "LIMIT 3;",
       ["[" + embedding.join(',') + "]"]
     );

@@ -1,5 +1,6 @@
 import { getAllStories } from "@/data/stories";
 import StoryCard from "@/components/StoryCard";
+import SearchBar from "@/components/SearchBar";
 
 export default function HomePage() {
   const stories = getAllStories();
@@ -12,11 +13,6 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
         <div className="relative max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-800/80 text-emerald-200 border border-emerald-600/40 mb-6 backdrop-blur-sm shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            Postgres Vector Search Ready
-          </div>
-
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">
             Adventures of James Ticatic Fishing
           </h1>
@@ -31,6 +27,10 @@ export default function HomePage() {
               <div className="text-2xl font-bold text-white">{stories.length}</div>
               <div className="text-xs text-emerald-300 font-medium">Documented Stories</div>
             </div>
+          </div>
+          
+          <div className="max-w-2xl mx-auto mt-8 text-left">
+            <SearchBar />
           </div>
         </div>
       </section>
