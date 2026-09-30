@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FishingStory } from "@/data/stories";
 
 interface StoryCardProps {
@@ -8,6 +9,17 @@ interface StoryCardProps {
 export default function StoryCard({ story }: StoryCardProps) {
   return (
     <article className="flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition-all duration-300 overflow-hidden group">
+      {story.coverImage && (
+        <div className="relative w-full h-48 bg-slate-100 overflow-hidden">
+          <Image
+            src={story.coverImage.url}
+            alt={story.coverImage.alt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+      )}
       <div className="p-6 flex flex-col flex-1">
         {/* Top Badges: Location & Read Time */}
         <div className="flex items-center justify-between gap-2 mb-3">
