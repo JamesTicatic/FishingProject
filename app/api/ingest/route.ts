@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       
       await pool.query(
         "INSERT INTO stories_embedding (story_id, title, excerpt, embedding) " +
-        "VALUES (, , , ) " +
+        "VALUES (\, \, \, \) " +
         "ON CONFLICT (story_id) " +
         "DO UPDATE SET " +
         "  title = EXCLUDED.title, " +
