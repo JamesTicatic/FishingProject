@@ -144,7 +144,7 @@ export const stories: FishingStory[] = [
     slug: "swifts-beach-kayak-slam-wareham-river",
     title: "Kayak Slams and Surprise Weakfish off Swifts Beach",
     excerpt:
-      "A laid-back birthday paddle across the Wareham river leads to relentless scup action and an unexpected northern weakfish",
+      "A laid-back birthday paddle across the Wareham river leads to relentless scup action and an unexpected northern weakfish.",
     content: `July 23rd was my birthday, and being on vacation in Wareham, Massachusetts, meant only one thing: we were getting on the water. With clear skies and calm summer conditions, Abbie and I launched the kayaks directly off Swifts Beach proper. We didn't have an elaborate game plan—just an eye on the expansive commercial oyster farms dotting the bay, which promised solid structure while keeping us safely tucked away from the busy boat channels.
 
   I handed Abbie a spinning outfit rigged with a soft plastic paddle-tail jig, while I tied on a reliable high-low rig for hammering bottom-dwelling scup. Abbie was hesitant, questioning whether her retrieve speed and jigging cadence were right. Back home in Colorado, presentation is an exacting science—matching hatches, mending line, and dialling in surgical dead drifts. Out here on bigger water, I told her the truth: 'There’s no single right way to do it; you just need to be in the zone at the right moment.' She asked how she’d detect a strike, to which I grinned: 'Trust me, you’ll know.'

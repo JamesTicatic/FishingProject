@@ -54,13 +54,25 @@ export default function StoryCard({ story }: StoryCardProps) {
         </p>
 
         {/* Species Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
+        <div className="flex flex-wrap gap-1.5 mb-2">
           {story.species.map((sp) => (
             <span
               key={sp}
-              className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+              className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
             >
               🐟 {sp}
+            </span>
+          ))}
+        </div>
+
+        {/* Gear Tags */}
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {story.gear.map((g) => (
+            <span
+              key={g}
+              className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+            >
+              🎣 {g}
             </span>
           ))}
         </div>

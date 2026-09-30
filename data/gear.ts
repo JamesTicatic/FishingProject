@@ -1,0 +1,16 @@
+export const GEAR_LIST = [
+  "Topwater Walk-the-Dog Plug",
+  "Soft Plastic Jig",
+  "Casting Spoons",
+  "Mullet",
+  "Crab",
+  "Zebco Spincast Combo (Light Action)",
+  "Sabiki Rig",
+  "Goofy Jig",
+  "Gotcha Plug",
+  "Frozen Shrimp",
+  "Cut Bait",
+  "High-Low Rig",
+  "Carolina Rig",
+  "Squid"
+];
