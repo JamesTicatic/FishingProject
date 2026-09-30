@@ -37,7 +37,7 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Semantic Search (e.g., 'shark encounters', 'fast action')..."
+          placeholder="Search (e.g., 'pier gotcha fishing', 'winter dry fly')"
           className="flex-1 px-4 py-3 bg-white rounded-xl border border-slate-300 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-900 placeholder:text-slate-500"
         />
         <button
