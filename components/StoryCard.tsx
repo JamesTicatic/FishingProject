@@ -10,7 +10,7 @@ export default function StoryCard({ story }: StoryCardProps) {
   return (
     <article className="flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition-all duration-300 overflow-hidden group">
       {story.coverImage && (
-        <div className="relative w-full h-48 bg-slate-100 overflow-hidden">
+        <div className="relative w-full h-64 bg-slate-100 overflow-hidden">
           <Image
             src={story.coverImage.url}
             alt={story.coverImage.alt}
@@ -49,7 +49,7 @@ export default function StoryCard({ story }: StoryCardProps) {
         </h3>
 
         {/* Excerpt */}
-        <p className="text-sm text-slate-600 line-clamp-3 mb-4 leading-relaxed flex-1">
+        <p className="text-sm text-slate-600 mb-4 leading-relaxed flex-1">
           {story.excerpt}
         </p>
 
