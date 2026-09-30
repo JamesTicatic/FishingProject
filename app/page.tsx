@@ -18,22 +18,18 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">
-            Adventures, Techniques, and Tides
+            Adventures of James Ticatic Fishing
           </h1>
 
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-emerald-100/90 leading-relaxed mb-10">
-            Real field reports and angling narratives from Maine salt rips to high-desert Oregon spey runs and Florida bonefish flats.
+            Real field reports and angling narratives from Maine salt rips to high-country Colorado fly rodding and everything in between.
           </p>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl mx-auto pt-6 border-t border-emerald-800/60 text-left">
+          <div className="gap-4 max-w-2xl mx-auto pt-6 border-t border-emerald-800/60 text-center">
             <div className="p-3 bg-emerald-900/40 rounded-xl border border-emerald-800/40">
               <div className="text-2xl font-bold text-white">{stories.length}</div>
               <div className="text-xs text-emerald-300 font-medium">Documented Stories</div>
-            </div>
-            <div className="col-span-2 sm:col-span-1 p-3 bg-emerald-900/40 rounded-xl border border-emerald-800/40">
-              <div className="text-2xl font-bold text-white">Fresh &amp; Salt</div>
-              <div className="text-xs text-emerald-300 font-medium">Ecosystem Scope</div>
             </div>
           </div>
         </div>
@@ -48,7 +44,7 @@ export default function HomePage() {
                 Featured Field Narratives
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Explore curated logs by water, target species, and angling discipline.
+                Explore curated logs by species, location, used gear and article content.
               </p>
             </div>
             <span className="text-xs font-semibold px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">

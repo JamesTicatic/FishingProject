@@ -1,3 +1,9 @@
+export interface StoryImage {
+  url: string;
+  alt: string;
+  caption?: string;
+}
+
 export interface FishingStory {
   id: string;
   slug: string;
@@ -8,6 +14,7 @@ export interface FishingStory {
   species: string[];
   gear: string[];
   date: string;
+  coverImage?: StoryImage;
 }
 
 export const stories: FishingStory[] = [
@@ -49,6 +56,11 @@ export const stories: FishingStory[] = [
       "Live Bait (Mullet & Crab)"
     ],
     date: "August 20, 2026",
+    coverImage: {
+      url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/Andrew2026.jpg",
+      alt: "Andrew holding his monster catch",
+      caption: "Sight-casting metal at fast moving pelagics." // optional
+    },
   }
 ];
 
