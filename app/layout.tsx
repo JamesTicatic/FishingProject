@@ -32,28 +32,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-200 selection:text-emerald-900">
         <Navbar />
         <div className="flex-1">{children}</div>
-        <footer className="border-t border-slate-200 bg-white py-12 text-slate-600 text-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-900">Cast &amp; Catch Stories</span>
-              <span className="text-slate-400">|</span>
-              <span className="text-xs text-slate-500">
-                Foundational Corpus for Postgres Vector Search
-              </span>
-            </div>
-            <div className="flex items-center gap-6 text-xs">
-              <a
-                href="/api/search"
-                target="_blank"
-                rel="noreferrer"
-                className="text-emerald-700 hover:text-emerald-900 font-medium underline underline-offset-4"
-              >
-                Vector Search API
-              </a>
-              <span className="text-slate-400">© 2026 Field Journal Logs</span>
-            </div>
-          </div>
-        </footer>
       </body>
     </html>
   );
