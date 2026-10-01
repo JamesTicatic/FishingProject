@@ -10,6 +10,7 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
   const [selectedSpecies, setSelectedSpecies] = useState('All');
   const [selectedGear, setSelectedGear] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredStories = initialStories.filter(story => {
     const matchesSpecies = selectedSpecies === 'All' || story.species.includes(selectedSpecies);
@@ -20,6 +21,13 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
 
   // Sort descending (newest first)
   filteredStories.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const ITEMS_PER_PAGE = 6;
+  const totalPages = Math.ceil(filteredStories.length / ITEMS_PER_PAGE);
+  const paginatedStories = filteredStories.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 mb-8">
@@ -40,7 +48,10 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
           <select 
             id="gridSpeciesFilter"
             value={selectedSpecies}
-            onChange={(e) => setSelectedSpecies(e.target.value)}
+            onChange={(e) => {
+              setSelectedSpecies(e.target.value);
+              setCurrentPage(1);
+            }}
             className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-3 py-2 outline-none transition-colors"
           >
             <option value="All">All Species</option>
@@ -55,7 +66,10 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
           <select 
             id="gridGearFilter"
             value={selectedGear}
-            onChange={(e) => setSelectedGear(e.target.value)}
+            onChange={(e) => {
+              setSelectedGear(e.target.value);
+              setCurrentPage(1);
+            }}
             className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-3 py-2 outline-none transition-colors"
           >
             <option value="All">All Gear</option>
@@ -70,7 +84,10 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
           <select 
             id="gridLocationFilter"
             value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
+            onChange={(e) => {
+              setSelectedLocation(e.target.value);
+              setCurrentPage(1);
+            }}
             className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-3 py-2 outline-none transition-colors"
           >
             <option value="All">All Locations</option>
@@ -85,15 +102,37 @@ export default function StoryGrid({ initialStories }: { initialStories: FishingS
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
-        {filteredStories.map((story) => (
+        {paginatedStories.map((story) => (
           <StoryCard key={story.id} story={story} />
         ))}
-        {filteredStories.length === 0 && (
+        {paginatedStories.length === 0 && (
           <div className="col-span-full py-12 text-center text-slate-500">
             No stories found matching your selected filters.
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 pt-8 mt-4 border-t border-slate-100">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+          <span className="text-sm font-medium text-slate-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
