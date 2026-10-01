@@ -78,6 +78,7 @@ export async function GET(request: Request) {
       "DROP TABLE IF EXISTS story_chunks;\n      CREATE TABLE IF NOT EXISTS story_chunks (" +
       "  id SERIAL PRIMARY KEY," +
       "  story_id VARCHAR(255) NOT NULL," +
+      "  slug TEXT NOT NULL," +
       "  title TEXT NOT NULL," +
       "  excerpt TEXT NOT NULL," +
       "  species TEXT[]," +
@@ -108,9 +109,9 @@ export async function GET(request: Request) {
         const embedding = result.embedding.values;
         
         await pool.query(
-          "INSERT INTO story_chunks (story_id, title, excerpt, species, gear, location, date, chunk_index, chunk_text, embedding) " +
-          "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);",
-          [story.id, story.title, story.excerpt, story.species, story.gear, story.location, story.date, i, paragraph, "[" + embedding.join(',') + "]"]
+          "INSERT INTO story_chunks (story_id, slug, title, excerpt, species, gear, location, date, chunk_index, chunk_text, embedding) " +
+          "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);",
+          [story.id, story.slug, story.title, story.excerpt, story.species, story.gear, story.location, story.date, i, paragraph, "[" + embedding.join(',') + "]"]
         );
         chunksCount++;
       }

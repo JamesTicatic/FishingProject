@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getAllStories } from '@/data/stories';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
@@ -8,6 +9,14 @@ export default function SearchBar() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
+
+  const storiesList = getAllStories();
+
+  const getStorySlug = (res: any) => {
+    if (res.slug) return res.slug;
+    const match = storiesList.find(s => s.id === res.story_id || s.title === res.title);
+    return match ? match.slug : res.story_id;
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
@@ -71,7 +80,11 @@ export default function SearchBar() {
             <ul className="space-y-4">
               {results.map((res) => (
                 <li key={res.story_id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
-                  <h4 className="font-medium text-emerald-800">{res.title}</h4>
+                  <h4 className="font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    <Link href={`/stories/${getStorySlug(res)}`} className="hover:underline">
+                      {res.title}
+                    </Link>
+                  </h4>
                   <p className="text-sm text-slate-600 mt-2 italic line-clamp-3">"{res.chunk_text}"</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <div className="text-xs text-emerald-600 font-medium">
