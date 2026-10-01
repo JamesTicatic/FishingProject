@@ -36,7 +36,7 @@ export const stories: FishingStory[] = [
 
   To top off an already unforgettable day, a school of massive sharks began cruising the rips. We managed to hook into a powerful blacktip shark, sending our gear into overdrive as it put on a clinic of lightning-fast directional shifts, raw power, and corkscrewing aerial jumps.
 
-  Sharing a day like this with lifelong friends—building on a bond that’s lasted for years—is what saltwater fishing is all about. Watching that blacktip breach against the Carolina sky, surrounded by best friends, was a core memory locked in for a lifetime.`,
+  Sharing a day like this with lifelong friends—building on a bond that’s lasted for years—is what the trip was all about. Watching that blacktip breach against the Carolina sky, surrounded by best friends, was a core memory locked in for a lifetime.`,
     location: "Wrightsville Beach, North Carolina",
     species: [
       "Red Drum",
@@ -174,6 +174,43 @@ export const stories: FishingStory[] = [
       alt: "Weakfish being held on kayak",
       caption: "Trophy Wareham Weakfish" // optional
     },
+  },
+  {
+    id: "story-6",
+    slug: "clear-lake-colorado-trout-and-floating-fish-lore",
+    title: "Flashback Pheasant Tails and Floating Fish Lore at Clear Lake",
+    excerpt:
+      "A spontaneous drive past high-traffic canyon stretches leads to alpine redemption, midges on light tippet, and an ironic inside joke a decade in the making.",
+    content: `It was a pristine, sun-soaked morning in Colorado as Andres and I carved our way up Clear Creek Canyon. The goal was simple: get outdoors and soak in the rugged Front Range scenery. We hadn't dialed in a definitive destination beforehand, and as we wound along the creek, Andres felt a wave of disappointment—the canyon was crawling with traffic, and it was a place he’d visited far too recently. At the time, I was laser-focused on refining my fly fishing technique, often dragging myself to heavily pressured stretches specifically to sharpen my game. But the endless self-criticism and obsession with numbers had been slowly leeching the pure joy out of the sport. 
+
+  Pivoting mid-drive, I suggested pushing past the canyon crowds toward Clear Lake, a high-elevation alpine fishery tucked above Georgetown that neither of us had explored. A quick stop at Taco Bell fueled the detour, and the moment the turquoise water opened up against the granite basin, that fading passion snapped straight back into focus. Andres is a lot of things, but he undeniably has brought good into my life.
+
+  We picked our way along the south shore, sticking to the gentle perimeter trail toward the river inlet where oxygen and current were guaranteed to stack fish. Early on, the action was nonexistent. Andres wasted no time roasting me over our prior outing to Bear Creek—a grueling day where I managed zero fish and endless practice casts. 'Why do you even fish if it’s just casting?' he joked, and I couldn't help but laugh along.
+
+  Then the puzzle fell into place. The trout weren't chasing big flashy hardware; they were hyper-focused on micro-invertebrates drifting in the subsurface seam. Dropping a size 14 Flashback Pheasant Tail nymph under an indicator with a size 18 Zebra Midge trailer unlocked the entire lake. As high-country clouds and sudden gusts rolled across the basin, sporadic sunbursts triggered a full-blown alpine feeding frenzy. Andres's teasing quickly shifted to genuine hype: 'You hooked another one!' echoed across the cove as trout after trout came to hand.
+
+  The scene dredged up an old memory from our high school days back in Raleigh, North Carolina. We were kids at Umstead Lake chasing largemouth bass, and I had handed Andres the camera to photograph a catch. My fish handling back then was admittedly lacking, and the bass unfortunately went belly-up. Andres had captured a photo of the casualty floating in the weeds, and over ten years of shared friendship, that photo remained an untouchable, dark-humor staple.
+
+  Fast forward to Clear Lake, and my fishing ethics were night-and-day: barbless hooks, short fights on stout tippet, water temps holding cleanly in the mid-50s, and every trout unhooked and released directly in the rubber net without leaving the water. Every single fish kicked away strong and pristine.
+
+  And then, right on cue from the comedy gods, a pale, ghostly silver shape began slowly bobbing up from the depths of the lake basin.
+
+  It wasn't a cruising rainbow—it was a completely dead stocker floating right toward the bank. We locked eyes and erupted in helpless laughter. To an outsider, snapping another photo of a floating fish looks morbid and callous. But for two guys who have shared a decade of laughs, miles of road, and plenty of skunked days, it was the perfect punchline to close out an unforgettable Colorado day.`,
+    location: "Georgetown, Colorado",
+    species: [
+      "Rainbow Trout"
+    ],
+    gear: [
+      "9ft 5wt Fly Rod",
+      "Flashback Pheasant Tail",
+      "Zebra Midge"
+    ],
+    date: "June 23, 2026",
+    coverImage: {
+      url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/clearlakecast.jpg",
+      alt: "Fly Casting on an apline lake",
+      caption: "Views from above at Clear Lake"
+    }
   }
 ];
 

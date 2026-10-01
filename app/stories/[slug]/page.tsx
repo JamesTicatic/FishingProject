@@ -200,7 +200,7 @@ export default async function StoryPage({ params }: PageProps) {
                 {/* Species */}
                 <div className="pt-4">
                   <dt className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                    Target Species
+                    Landed Species
                   </dt>
                   <dd className="flex flex-wrap gap-1.5">
                     {story.species.map((sp) => (

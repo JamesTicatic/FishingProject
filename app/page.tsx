@@ -26,16 +26,8 @@ export default function HomePage() {
           </div>
 
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-emerald-100/90 leading-relaxed mb-10">
-            Real field reports and angling narratives from Maine salt rips to high-country Colorado fly rodding and everything in between.
+            Real angling narratives from Maine salt rips to high-country Colorado fly rodding and everything in between.
           </p>
-
-          {/* Quick Metrics Bar */}
-          <div className="gap-4 max-w-2xl mx-auto pt-6 border-t border-emerald-800/60 text-center">
-            <div className="p-3 bg-emerald-900/40 rounded-xl border border-emerald-800/40">
-              <div className="text-2xl font-bold text-white">{stories.length}</div>
-              <div className="text-xs text-emerald-300 font-medium">Documented Stories</div>
-            </div>
-          </div>
           
           <div className="max-w-2xl mx-auto mt-8 text-left">
             <SearchBar />

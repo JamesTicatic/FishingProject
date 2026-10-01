@@ -12,5 +12,8 @@ export const GEAR_LIST = [
   "Cut Bait",
   "High-Low Rig",
   "Carolina Rig",
-  "Squid"
+  "Squid",
+  "9ft 5wt Fly Rod",
+  "Flashback Pheasant Tail",
+  "Zebra Midge"
 ];
