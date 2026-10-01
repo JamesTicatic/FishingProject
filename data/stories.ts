@@ -176,7 +176,7 @@ export const stories: FishingStory[] = [
     },
   },
   {
-    id: "story-6",
+    id: "story-5",
     slug: "clear-lake-colorado-trout-and-floating-fish-lore",
     title: "Flashback Pheasant Tails and Floating Fish Lore at Clear Lake",
     excerpt:
@@ -210,6 +210,75 @@ export const stories: FishingStory[] = [
       url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/clearlakecast.jpg",
       alt: "Fly Casting on an apline lake",
       caption: "Views from above at Clear Lake"
+    }
+  },
+  {
+    id: "story-6",
+    slug: "tailwater-troutlet-to-georgetown-lake-catch-and-cook",
+    title: "From the Hollywood Hole to a Georgetown Lake Catch and Cook",
+    excerpt:
+      "Trading the hyper-pressured tailwater circus of Silverthorne's outlet malls for the open water and productive Georgetown Lake.",
+    content: `September 3rd started with a familiar Colorado itch: putting a heavyweight tailwater trout on the fly rod. First light found me standing in the Blue River right through the Silverthorne outlet malls, rigged up beneath the pedestrian bridge leading to the Columbia store. Locals and guides affectionately dub this stretch the 'Hollywood Hole'—equal parts prized honey hole and public theater, flanked by shopping footpaths and spectators leaning over the railings.
+
+  It didn't take long for the tailwater reality to set in. Within minutes, lines were being lobbed over mine and waders were pushing through the seam. While crowding is par for the course here, it still stings to watch prime water get trampled. I backed out of the fray, walked upstream to a quieter pocket, and spotted the unmistakable red band hovering just above the bottom. The fish would delicately rise, but never break the surface. One delicate drift with a size 20 Griffith's Gnat brought a slow, deliberate sip. 
+
+  Hooked up, the 20-inch rainbow fought with strange resignation—almost swimming right toward the rubber bag as if eager to get the unhooking ritual over with. It is wild how heavily pressured tailwater trout adapt their survival playbook, treating a hook set more like a routine inconvenience than a fight for life.
+
+  Needing room to breathe, I packed the rod and drove back east over the divide to Georgetown Lake. In terms of foot traffic, Georgetown sees plenty of anglers, but the vast expanse of open water diffuses the pressure entirely. Stocked fish cruise without the constant barrage of tippet dragging across their noses. And the common tactics used, powerbait/live worms, do get refused but small aquatic insects are always on the menu. Another impressive display of trout intelligence, denying the reasonable large protein offering in favor of smaller prey that is less likely to be a trap.
+
+  Historically, my routine on Georgetown stayed locked north of the bridge, methodically watching a strike indicator suspended over a classic tandem—a beadhead pheasant tail with a midge dropper—usually waiting ten to fifteen minutes between strikes. Today, I broke routine and prospected south of the bridge. 
+
+  The payoff was immediate. The south end presented varied depth contours, sharp drop-offs, and stacked schools that tripled my typical hookup rate. Rather than a bite every quarter-hour, the indicator plunged consistently as eager rainbows and occassional browns attacked the nymphs. 
+
+  Catch-and-release is my default across the high country, but fresh off a summer of delicious saltwater table fare, I decided to harvest one clean stocker for the fire. Back home, that rainbow hit the hot grill grates with lemon and butter—capping off a classic early autumn Front Range day of grit, adaptation, and a hard-earned meal.`,
+    location: "Georgetown, Colorado",
+    species: [
+      "Rainbow Trout",
+      "Brown Trout"
+    ],
+    gear: [
+      "9ft 5wt Fly Rod",
+      "Griffith's Gnat",
+      "Flashback Pheasant Tail",
+      "Zebra Midge"
+    ],
+    date: "September 3, 2026",
+    coverImage: {
+      url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/troutletgriffithsgnat.jpg",
+      alt: "Large trout facing camera with griffiths gnat lodged in top jaw",
+      caption: "Completely fooled tailwater trout, an accomplishment"
+    }
+  },
+  {
+    id: "story-7",
+    slug: "jacy-first-mackerel-blitz-maine-state-pier",
+    title: "Harbor Seals, Pier Characters, and Jacy's First Mackerel Blitz",
+    excerpt:
+      "A hot morning on the Maine State Pier turns a hesitant dock walk into a lesson in persistence.",
+    content: `On August 7th, Jacy finally had a day off from work in Portland, Maine. She had been showing an itch to try fishing lately, so I shipped a brand-new spinning combo to Portland. Today was our first real opportunity to get out on the water together and put her new setup through its paces.
+
+  We made our way down toward our familiar pocket on the Maine State Pier. As we neared the end, unsavory characters loitering near the rail made her reasonably hesitant about walking out. Without a backup plan and driven by that stubborn angler's determination to wet a line no matter what, I convinced her to press forward. Once we set our tackle down and tied up, the initial tension vanished—it was just standard dockside bustle with zero issues.
+
+  Anchoring the end of the pier was a fixture of the Portland waterfront: an older Russian gentleman who seemed to live on these planks every summer I visited. The man was a local dock legend who always out-fished everyone in sight, but even he was grinding through an uncharacteristically dead bite today. We worked our sabiki rigs over the pilings and out into the current, but couldn't coax so much as a nibble from the harbor pollock that typically hug the pier.
+
+  Fortunately, Casco Bay supplied plenty of sideshow entertainment. A resident harbor seal repeatedly popped its head to keep tabs on us, while an erratic jet skier repeatedly buzzed right along the edge of our casting range, carving tight, aimless circles.
+
+  Then the harbor flipped a switch. A dense bait ball balled up tight against the pier timbers before spraying across the surface. Mackerel marauded the fringes, slashing through the bait in a frenzied blitz. 
+
+  Jacy didn't hesitate. She fired her new rod into the boiling water, twitched the sabiki through the school, and connected before the blitz could dissipate—a strike executed with the timing and poise of a veteran angler. Watching her was a reminder of why she thrives at everything she does: she carries that rare combination of stubborn persistence and rapid adaptation. We hauled a few more thrashing mackerel over the rail before the midday heat forced a retreat, wrapping up a first-tackle milestone and beginning a tradition that will hopefully be long lived.`,
+    location: "Portland, Maine",
+    species: [
+      "Atlantic Mackerel",
+      "Pollock"
+    ],
+    gear: [
+      "Sabiki Rig",
+    ],
+    date: "August 7, 2026",
+    coverImage: {
+      url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/jacyfish.jpg",
+      alt: "Two anglers standing on pier as jet ski and ferry pass by",
+      caption: "Crowded waterways as to be expected on Maine State Pier"
     }
   }
 ];

@@ -15,5 +15,6 @@ export const SPECIES_LIST = [
   "Scup",
   "Black Sea Bass",
   "Dogfish",
-  "Rainbow Trout"
+  "Rainbow Trout",
+  "Brown Trout"
 ];
