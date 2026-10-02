@@ -7,6 +7,7 @@ export default function DashboardPage() {
   const [query, setQuery] = useState('');
   const [resultsChunked, setResultsChunked] = useState<any[]>([]);
   const [resultsFull, setResultsFull] = useState<any[]>([]);
+  const [resultsLexical, setResultsLexical] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -17,20 +18,24 @@ export default function DashboardPage() {
     setLoading(true);
     setSearched(true);
     try {
-      const [resChunked, resFull] = await Promise.all([
+      const [resChunked, resFull, resLexical] = await Promise.all([
         fetch(`/api/search?q=${encodeURIComponent(query)}`),
-        fetch(`/api/search-full?q=${encodeURIComponent(query)}`)
+        fetch(`/api/search-full?q=${encodeURIComponent(query)}`),
+        fetch(`/api/search-lexical?q=${encodeURIComponent(query)}`)
       ]);
 
       const dataChunked = await resChunked.json();
       const dataFull = await resFull.json();
+      const dataLexical = await resLexical.json();
 
       setResultsChunked(dataChunked.results || []);
       setResultsFull(dataFull.results || []);
+      setResultsLexical(dataLexical.results || []);
     } catch (err) {
       console.error(err);
       setResultsChunked([]);
       setResultsFull([]);
+      setResultsLexical([]);
     } finally {
       setLoading(false);
     }
@@ -38,7 +43,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
             Search Comparison Dashboard
@@ -95,6 +100,14 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Try It Out Section */}
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Try It Out</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Test a query across Lexical (Keyword), Chunked Vector, and Full Article Vector search models in real time.
+          </p>
+        </div>
+
         <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl mx-auto mb-12">
           <input
             type="text"
@@ -113,18 +126,48 @@ export default function DashboardPage() {
         </form>
 
         {searched && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
+            {/* Lexical / Keyword Search Results */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <h2 className="text-xl font-bold text-slate-800">Lexical (Keyword)</h2>
+                <span className="ml-auto text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                  Word Matching
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-6">Matches literal words and displays total occurrence counts.</p>
+              
+              {resultsLexical.length > 0 ? (
+                <ul className="space-y-6">
+                  {resultsLexical.map((res) => (
+                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                      <Link href={`/stories/${res.story_id.replace('story-', '')}`} className="font-semibold text-emerald-700 hover:underline">
+                        {res.title}
+                      </Link>
+                      <p className="text-sm text-slate-700 mt-3 italic line-clamp-4">"{res.chunk_text}"</p>
+                      <div className="text-xs text-blue-700 mt-3 font-medium bg-blue-50 border border-blue-200 inline-block px-2.5 py-1 rounded-md">
+                        Occurrences: {res.match_count}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-slate-500">{loading ? 'Searching keywords...' : 'No keyword matches found.'}</p>
+              )}
+            </div>
+
             {/* Chunked Search Results */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
                 <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                <h2 className="text-xl font-bold text-slate-800">Chunked Search</h2>
+                <h2 className="text-xl font-bold text-slate-800">Chunked (Semantic)</h2>
                 <span className="ml-auto text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-800 rounded">
                   Highly Accurate
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mb-6">Excerpt below article shows exact paragraph that matched your search.</p>
+              <p className="text-xs text-slate-500 mb-6">Matches paragraph concepts and displays vector similarity score.</p>
               
               {resultsChunked.length > 0 ? (
                 <ul className="space-y-6">
@@ -134,7 +177,7 @@ export default function DashboardPage() {
                         {res.title}
                       </Link>
                       <p className="text-sm text-slate-700 mt-3 italic line-clamp-4">"{res.chunk_text}"</p>
-                      <div className="text-xs text-slate-500 mt-3 font-medium bg-slate-200/50 inline-block px-2 py-1 rounded">
+                      <div className="text-xs text-emerald-700 mt-3 font-medium bg-emerald-50 border border-emerald-200 inline-block px-2.5 py-1 rounded-md">
                         Similarity: {(res.similarity * 100).toFixed(1)}%
                       </div>
                     </li>
@@ -149,22 +192,22 @@ export default function DashboardPage() {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
                 <div className="w-3 h-3 rounded-full bg-slate-400"></div>
-                <h2 className="text-xl font-bold text-slate-800">Full Article Search</h2>
+                <h2 className="text-xl font-bold text-slate-800">Full Article (Semantic)</h2>
                 <span className="ml-auto text-xs font-semibold px-2 py-1 bg-slate-100 text-slate-600 rounded">
                   Legacy / Baseline
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mb-6">Matches the average semantic meaning of the entire story.</p>
+              <p className="text-xs text-slate-500 mb-6">Matches average whole-story concept and displays similarity score.</p>
               
               {resultsFull.length > 0 ? (
                 <ul className="space-y-6">
                   {resultsFull.map((res) => (
-                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50 opacity-80">
+                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50 opacity-90">
                       <Link href={`/stories/${res.story_id.replace('story-', '')}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
                       <p className="text-sm text-slate-600 mt-3 line-clamp-4">{res.excerpt}</p>
-                      <div className="text-xs text-slate-500 mt-3 font-medium bg-slate-200/50 inline-block px-2 py-1 rounded">
+                      <div className="text-xs text-slate-700 mt-3 font-medium bg-slate-100 border border-slate-200 inline-block px-2.5 py-1 rounded-md">
                         Similarity: {(res.similarity * 100).toFixed(1)}%
                       </div>
                     </li>
