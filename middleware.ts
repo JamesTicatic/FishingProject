@@ -10,8 +10,8 @@ export function middleware(request: NextRequest) {
       request.headers.get('x-real-ip') ||
       '127.0.0.1';
 
-    // Allow 15 requests per minute per IP address
-    const result = checkRateLimit(ip, { limit: 15, windowMs: 60 * 1000 });
+    // Allow 60 requests per minute per IP address
+    const result = checkRateLimit(ip, { limit: 60, windowMs: 60 * 1000 });
 
     if (result.isLimited) {
       return NextResponse.json(
@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
           status: 429, 
           headers: {
             'Retry-After': String(result.retryAfter),
-            'X-RateLimit-Limit': '15',
+            'X-RateLimit-Limit': '60',
             'X-RateLimit-Remaining': '0',
           } 
         }
@@ -30,7 +30,7 @@ export function middleware(request: NextRequest) {
     }
 
     const response = NextResponse.next();
-    response.headers.set('X-RateLimit-Limit', '15');
+    response.headers.set('X-RateLimit-Limit', '60');
     response.headers.set('X-RateLimit-Remaining', String(result.remaining));
     return response;
   }

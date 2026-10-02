@@ -26,7 +26,7 @@ export interface RateLimitConfig {
 }
 
 export function checkRateLimit(ip: string, config: RateLimitConfig = {}) {
-  const limit = config.limit ?? 15; // Default: 15 requests per minute
+  const limit = config.limit ?? 60; // Default: 60 requests per minute
   const windowMs = config.windowMs ?? 60 * 1000; // Default: 1 minute window
   const now = Date.now();
 

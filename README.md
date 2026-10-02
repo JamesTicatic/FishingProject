@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎣 Cast & Catch Stories | The Angler's Field Journal & Search Lab
 
-## Getting Started
+My personal fishing blog making use of a **search comparison laboratory**. Built with Next.js App Router, Tailwind CSS, Google Gemini Embeddings (`gemini-embedding-2`), and PostgreSQL with `pgvector` hosted on Neon Serverless.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌟 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 📖 The Angler's Field Journal
+* **Interactive Story Grid**: Filter narratives live by **Species**, **Gear Used**, and **Location** without triggering server reloads.
+* **Newest-First Ordering**: Automatic date-descending sort so the freshest catches always stay top of mind.
+* **True-to-Size Photography**: High-resolution, uncropped field photos displaying exact aspect ratios. Instead of storing heavy image binaries in PostgreSQL (which inflates database size), the app only stores lightweight URL strings for images hosted in Vercel Blob Object Storage.
+* **Pagination**: Grid pagination limiting display to 6 stories per page for clean browsing.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🔬 Search Comparison Dashboard (`/dashboard`)
+An interactive benchmark lab comparing three different retrieval paradigms side-by-side in real time:
+1. **Lexical / Keyword Search (`/api/search-lexical`)**: Traditional text search using PostgreSQL `tsvector` and `ILIKE`. Counts exact keyword occurrences across stories.
+2. **Chunked Paragraph Vector Search (`/api/search`)**: Splitting stories into paragraph chunks to prevent semantic dilution and pinpoint fine details.
+3. **Full-Article Vector Search (`/api/search-full`)**: Baseline model embedding the entire story narrative into a single vector, capturing average semantic meaning.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🛡️ Production & Security Safeguards
+* **In-Memory Rate Limiter (`lib/rate-limit.ts`)**: Throttles API access to **60 requests per minute per IP**, protecting Gemini API quotas and database connection pools from bot abuse.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Architecture & Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Framework**: Next.js (App Router, Server Components & Client Components)
+* **Styling**: Tailwind CSS
+* **Database**: PostgreSQL with `pgvector` extension (Neon Serverless)
+* **AI Embeddings**: Google Gemini API (`gemini-embedding-2`, 3072-dimension vectors)
+* **Language**: TypeScript
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 🔮 Future Architectural Roadmap
+
+Beyond adding an ORM, here are enterprise backend architectural patterns to introduce as the platform scales:
+
+### 1. Asynchronous Job Queues (Background Workers)
+* **Concept**: Offload heavy tasks (like generating embeddings for 100+ new stories) out of the HTTP request loop.
+* **Tech**: Redis + BullMQ or AWS SQS.
+* **Benefit**: Long ingestion scripts return an immediate `202 Accepted` status to the client while background workers process data without hitting 15-second serverless HTTP timeouts.
+
+### 2. In-Memory Caching Layer
+* **Concept**: Cache frequent or identical search queries.
+* **Tech**: Upstash Redis or Redis Cloud.
+* **Benefit**: If 100 users search for `"red drum"`, the first query hits Gemini and Postgres, while the remaining 99 are served instantly from Redis in < 2ms, saving API costs and database compute.
+
+### 3. Strict API Input Validation
+* **Concept**: Validate and sanitize all incoming request parameters before executing any queries.
+* **Tech**: Zod or TypeBox schemas.
+* **Benefit**: Rejects malformed requests or injection attempts at the API boundary before hitting business logic.
+
+### 4. Authentication & Role-Based Access Control (RBAC)
+* **Concept**: Protect administrative endpoints.
+* **Tech**: NextAuth.js (Auth.js) or Clerk.
+* **Benefit**: Ensures public users can execute searches while strictly restricting data ingestion (`/api/ingest`) to authenticated administrators.
+
+### 5. Database Schema Version Control & Migrations
+* **Concept**: Incremental tracking of database changes.
+* **Tech**: Drizzle Kit or Prisma Migrate.
+* **Benefit**: Allows schema updates (adding columns, indexes) in live production environments without resorting to destructive `DROP TABLE IF EXISTS` commands.
+
+### 6. Production Observability & Application Performance Monitoring (APM)
+* **Concept**: Real-time error tracking and query performance tracing.
+* **Tech**: Sentry, Datadog, or OpenTelemetry.
+* **Benefit**: Automatically alerts engineers with exact stack traces and user context when an API route fails in production.
+
+---
+
+## 📡 API Endpoint Reference
+
+| Route | Method | Description |
+| :--- | :--- | :--- |
+| `/api/search` | `GET` | Vector search over paragraph chunks using `pgvector` |
+| `/api/search-full` | `GET` | Vector search over full story narratives (baseline) |
+| `/api/search-lexical` | `GET` | Full-Text Lexical (Keyword) search with match occurrence counting |
+| `/api/ingest` | `GET` | Drops & recreates `story_chunks` table and embeds story paragraphs |
+| `/api/ingest-full` | `GET` | Drops & recreates `stories_embedding` table and embeds full stories |
+| `/api/dev/env` | `GET` | Development-only status inspector for loaded environment variables |
