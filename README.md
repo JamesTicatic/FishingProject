@@ -81,4 +81,3 @@ Beyond adding an ORM, here are enterprise backend architectural patterns to intr
 | `/api/search-lexical` | `GET` | Full-Text Lexical (Keyword) search with match occurrence counting |
 | `/api/ingest` | `GET` | Drops & recreates `story_chunks` table and embeds story paragraphs |
 | `/api/ingest-full` | `GET` | Drops & recreates `stories_embedding` table and embeds full stories |
-| `/api/dev/env` | `GET` | Development-only status inspector for loaded environment variables |

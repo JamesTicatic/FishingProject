@@ -50,14 +50,6 @@ export default function RootLayout({
                 </svg>
                 Developer README
               </a>
-              <a
-                href="/api/dev/env"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-emerald-400 font-medium transition-colors"
-              >
-                Dev Env Inspector
-              </a>
             </div>
           </div>
         </footer>
