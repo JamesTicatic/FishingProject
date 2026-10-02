@@ -16,7 +16,31 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Cast & Catch Stories | The Angler's Field Journal",
   description:
-    "Foundational fishing stories blog featuring authentic field narratives, fly patterns, species guides, and coastal explorations.",
+    "Authentic field narratives, fly patterns, species guides, coastal explorations, and AI vector search benchmark lab.",
+  icons: {
+    icon: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/og-image.jpg",
+    apple: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/og-image.jpg",
+  },
+  openGraph: {
+    title: "Cast & Catch Stories | The Angler's Field Journal",
+    description:
+      "Authentic field narratives, species guides, coastal explorations, and AI vector search benchmark lab.",
+    siteName: "Cast & Catch Stories",
+    images: [
+      {
+        url: "https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/Jamesfish.jpg",
+        alt: "Adventures of James Ticatic Fishing",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cast & Catch Stories | The Angler's Field Journal",
+    description: "Authentic angling logs & AI vector search lab.",
+    images: ["https://acgy0tm5uubdnyxg.public.blob.vercel-storage.com/Jamesfish.jpg"],
+  },
 };
 
 export default function RootLayout({
