@@ -75,7 +75,7 @@ export default function SearchBar() {
 
       {searched && (
         <div className="mt-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <h3 className="font-semibold text-slate-800 mb-4">Vector Search Results</h3>
+          <h3 className="font-semibold text-slate-800 mb-4">Search Results</h3>
           {results.length > 0 ? (
             <ul className="space-y-4">
               {results.map((res) => (
