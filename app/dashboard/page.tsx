@@ -2,6 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { getAllStories } from '@/data/stories';
+
+const storiesList = getAllStories();
+
+const getStorySlug = (res: any) => {
+  if (res.slug) return res.slug;
+  const match = storiesList.find(s => s.id === res.story_id || s.title === res.title);
+  return match ? match.slug : res.story_id;
+};
 
 export default function DashboardPage() {
   const [query, setQuery] = useState('');
@@ -143,7 +152,7 @@ export default function DashboardPage() {
                 <ul className="space-y-6">
                   {resultsLexical.map((res) => (
                     <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
-                      <Link href={`/stories/${res.story_id.replace('story-', '')}`} className="font-semibold text-emerald-700 hover:underline">
+                      <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
                       <p className="text-sm text-slate-700 mt-3 italic line-clamp-4">"{res.chunk_text}"</p>
@@ -173,7 +182,7 @@ export default function DashboardPage() {
                 <ul className="space-y-6">
                   {resultsChunked.map((res) => (
                     <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
-                      <Link href={`/stories/${res.story_id.replace('story-', '')}`} className="font-semibold text-emerald-700 hover:underline">
+                      <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
                       <p className="text-sm text-slate-700 mt-3 italic line-clamp-4">"{res.chunk_text}"</p>
@@ -203,7 +212,7 @@ export default function DashboardPage() {
                 <ul className="space-y-6">
                   {resultsFull.map((res) => (
                     <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50 opacity-90">
-                      <Link href={`/stories/${res.story_id.replace('story-', '')}`} className="font-semibold text-emerald-700 hover:underline">
+                      <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
                       <p className="text-sm text-slate-600 mt-3 line-clamp-4">{res.excerpt}</p>

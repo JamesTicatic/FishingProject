@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const dbQuery = `
       WITH chunk_counts AS (
         SELECT 
-          story_id, title, excerpt, chunk_text,
+          story_id, slug, title, excerpt, chunk_text,
           (
             (LENGTH(LOWER(chunk_text)) - 
              LENGTH(REPLACE(LOWER(chunk_text), LOWER($1), ''))) 
@@ -64,12 +64,12 @@ export async function GET(request: Request) {
       ),
       best_chunks AS (
         SELECT DISTINCT ON (story_id)
-          story_id, title, excerpt, chunk_text, rank
+          story_id, slug, title, excerpt, chunk_text, rank
         FROM chunk_counts
         ORDER BY story_id, chunk_match_count DESC, rank DESC
       )
       SELECT 
-        b.story_id, b.title, b.excerpt, b.chunk_text, 
+        b.story_id, b.slug, b.title, b.excerpt, b.chunk_text, 
         t.match_count, 
         b.rank as similarity
       FROM best_chunks b
