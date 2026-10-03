@@ -29,6 +29,7 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 * **Styling**: Tailwind CSS
 * **Database**: PostgreSQL with `pgvector` extension (Neon Serverless)
 * **AI Embeddings**: Google Gemini API (`gemini-embedding-2`, 3072-dimension vectors)
+* **Analytics**: Vercel Analytics (`@vercel/analytics`)
 * **Language**: TypeScript
 
 ---
