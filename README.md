@@ -21,6 +21,8 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 ### 🛡️ Production & Security Safeguards
 * **In-Memory Rate Limiter (`lib/rate-limit.ts`)**: Throttles API access to **60 requests per minute per IP**, protecting Gemini API quotas and database connection pools from bot abuse.
 
+* **Ingestion Endpoints Authorization**: Admin key access to ingestion endpoints to prevent unwanted ingestion calls.
+
 ---
 
 ## 🛠️ Architecture & Tech Stack
@@ -42,6 +44,7 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 | `/api/search` | `GET` | Vector search over paragraph chunks using `pgvector` | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-full` | `GET` | Vector search over full story narratives (baseline) | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-lexical` | `GET` | Full-Text Lexical (Keyword) search with occurrence counting | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, match_count }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
+| `/api/search-hybrid` | `GET` | Hybrid Search combining Lexical + `pgvector` with Reciprocal Rank Fusion (RRF) | • `200 OK`: `{ query, method, rrf_k, results: [{ story_id, title, excerpt, chunk_text, lexical_rank, vector_rank, similarity, rrf_score }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/ingest` | `GET` | Non-destructive Drizzle ORM ingestion over paragraph chunks (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/ingest-full` | `GET` | Non-destructive Drizzle ORM ingestion over full stories (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 
@@ -78,17 +81,10 @@ Here are enterprise backend architectural patterns to introduce as the platform 
 * **Tech**: Zod or TypeBox schemas.
 * **Benefit**: Rejects malformed requests or injection attempts at the API boundary before hitting business logic.
 
-### 6. Authentication & Role-Based Access Control (RBAC)
-* **Concept**: Protect administrative endpoints.
-* **Tech**: NextAuth.js (Auth.js) or Clerk.
-* **Benefit**: Ensures public users can execute searches while strictly restricting data ingestion (`/api/ingest`) to authenticated administrators.
 
-### 7. Database Schema Version Control & Migrations
-* **Concept**: Incremental tracking of database changes.
-* **Tech**: Drizzle Kit or Prisma Migrate.
-* **Benefit**: Allows schema updates (adding columns, indexes) in live production environments without resorting to destructive `DROP TABLE IF EXISTS` commands.
 
-### 8. Production Observability & Application Performance Monitoring (APM)
+
+### 6. Production Observability & Application Performance Monitoring (APM)
 * **Concept**: Real-time error tracking and query performance tracing.
 * **Tech**: Sentry, Datadog, or OpenTelemetry.
 * **Benefit**: Automatically alerts engineers with exact stack traces and user context when an API route fails in production.
