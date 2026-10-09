@@ -129,7 +129,7 @@ export default function DashboardPage() {
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Try It Out</h2>
           <p className="text-sm text-slate-500 mt-1">
-            Test a query across Lexical (Keyword), Chunked Vector, Full Article Vector, and Hybrid search models in real time.
+            Test a query across Lexical (Keyword), Chunked Vector, Full Article Vector, and Hybrid search models in real time. If the same article is returned multiple times for the same search, each result represents the "chunk" that was matched within the full article.
           </p>
         </div>
 
