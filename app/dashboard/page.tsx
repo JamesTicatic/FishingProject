@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [resultsChunked, setResultsChunked] = useState<any[]>([]);
   const [resultsFull, setResultsFull] = useState<any[]>([]);
   const [resultsLexical, setResultsLexical] = useState<any[]>([]);
+  const [resultsHybrid, setResultsHybrid] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -27,10 +28,11 @@ export default function DashboardPage() {
     setLoading(true);
     setSearched(true);
     try {
-      const [resChunked, resFull, resLexical] = await Promise.all([
+      const [resChunked, resFull, resLexical, resHybrid] = await Promise.all([
         fetch(`/api/search?q=${encodeURIComponent(query)}`),
         fetch(`/api/search-full?q=${encodeURIComponent(query)}`),
-        fetch(`/api/search-lexical?q=${encodeURIComponent(query)}`)
+        fetch(`/api/search-lexical?q=${encodeURIComponent(query)}`),
+        fetch(`/api/search-hybrid?q=${encodeURIComponent(query)}`)
       ]);
 
       const parseJson = async (res: Response) => {
@@ -42,20 +44,23 @@ export default function DashboardPage() {
         }
       };
 
-      const [dataChunked, dataFull, dataLexical] = await Promise.all([
+      const [dataChunked, dataFull, dataLexical, dataHybrid] = await Promise.all([
         parseJson(resChunked),
         parseJson(resFull),
-        parseJson(resLexical)
+        parseJson(resLexical),
+        parseJson(resHybrid)
       ]);
 
       setResultsChunked(dataChunked.results || []);
       setResultsFull(dataFull.results || []);
       setResultsLexical(dataLexical.results || []);
+      setResultsHybrid(dataHybrid.results || []);
     } catch (err) {
       console.error(err);
       setResultsChunked([]);
       setResultsFull([]);
       setResultsLexical([]);
+      setResultsHybrid([]);
     } finally {
       setLoading(false);
     }
@@ -98,7 +103,7 @@ export default function DashboardPage() {
             
             <div>
               <h3 className="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s-8-1.79-8-4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
                 Ingestion &amp; Search
               </h3> 
               <p className="leading-relaxed">
@@ -124,7 +129,7 @@ export default function DashboardPage() {
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Try It Out</h2>
           <p className="text-sm text-slate-500 mt-1">
-            Test a query across Lexical (Keyword), Chunked Vector, and Full Article Vector search models in real time.
+            Test a query across Lexical (Keyword), Chunked Vector, Full Article Vector, and Hybrid search models in real time.
           </p>
         </div>
 
@@ -146,7 +151,7 @@ export default function DashboardPage() {
         </form>
 
         {searched && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
             {/* Lexical / Keyword Search Results */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
@@ -235,6 +240,36 @@ export default function DashboardPage() {
                 </ul>
               ) : (
                 <p className="text-sm text-slate-500">{loading ? 'Searching vector space...' : 'No results found.'}</p>
+              )}
+            </div>
+
+            {/* Hybrid Search Results */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                <h2 className="text-xl font-bold text-slate-800">Hybrid (RRF)</h2>
+                <span className="ml-auto text-xs font-semibold px-2 py-1 bg-purple-100 text-purple-800 rounded">
+                  Combined
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-6">Combines keyword and semantic search results into a single ranking.</p>
+              
+              {resultsHybrid.length > 0 ? (
+                <ul className="space-y-6">
+                  {resultsHybrid.map((res, idx) => (
+                    <li key={`${res.story_id}-hybrid-${idx}`} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                      <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
+                        {res.title}
+                      </Link>
+                      <p className="text-sm text-slate-700 mt-3 italic line-clamp-4">"{res.chunk_text}"</p>
+                      <div className="text-xs text-purple-700 mt-3 font-medium bg-purple-50 border border-purple-200 inline-block px-2.5 py-1 rounded-md">
+                        RRF Score: {typeof res.rrf_score === 'number' ? res.rrf_score.toFixed(4) : res.rrf_score}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-slate-500">{loading ? 'Searching hybrid model...' : 'No results found.'}</p>
               )}
             </div>
 
