@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { Pool } from '@neondatabase/serverless';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getDb, schema } from '@/db';
+import { cosineDistance, desc, sql } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,21 +11,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'DATABASE_URL is not set.' }, { status: 500 });
   }
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { db } = getDb();
 
   try {
     if (!query) {
-      const tableCheck = await pool.query(
-        "SELECT EXISTS (" +
-        "  SELECT FROM information_schema.tables " +
-        "  WHERE table_name = 'story_chunks'" +
-        ");"
-      );
-      
-      const isReady = tableCheck.rows[0].exists;
-
       return NextResponse.json({
-        message: isReady ? 'Postgres pgvector search is ready.' : 'Database table not found. Please run the /api/ingest route first.',
+        message: 'Postgres pgvector search is ready.',
         usage: 'Add ?q=your_search_query to perform a vector search.'
       });
     }
@@ -39,26 +31,25 @@ export async function GET(request: Request) {
     const result = await model.embedContent(query);
     const embedding = result.embedding.values;
 
-    const dbQuery = `
-      WITH best_chunks AS (
-        SELECT DISTINCT ON (story_id) 
-          story_id, title, excerpt, chunk_text,
-          1 - (embedding <=> $1) as similarity
-        FROM story_chunks
-        ORDER BY story_id, embedding <=> $1
-      )
-      SELECT * FROM best_chunks
-      ORDER BY similarity DESC
-      LIMIT 3;
-    `;
-    
-    const queryParams = ["[" + embedding.join(',') + "]"];
+    // Type-safe Drizzle ORM query using cosineDistance helper (No raw SQL strings!)
+    const similarity = sql<number>`1 - (${cosineDistance(schema.storyChunks.embedding, embedding)})`;
 
-    const searchResults = await pool.query(dbQuery, queryParams);
+    const searchResults = await db
+      .select({
+        story_id: schema.storyChunks.storyId,
+        slug: schema.storyChunks.slug,
+        title: schema.storyChunks.title,
+        excerpt: schema.storyChunks.excerpt,
+        chunk_text: schema.storyChunks.chunkText,
+        similarity,
+      })
+      .from(schema.storyChunks)
+      .orderBy(desc(similarity))
+      .limit(3);
 
     return NextResponse.json({
       query: query,
-      results: searchResults.rows
+      results: searchResults
     });
 
   } catch (error: any) {

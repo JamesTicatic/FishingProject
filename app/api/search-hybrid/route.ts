@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getDb } from '@/db';
+import { getDb, schema } from '@/db';
+import { cosineDistance, desc, sql, ilike, or } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,23 +11,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'DATABASE_URL is not set.' }, { status: 500 });
   }
 
-  const { pool } = getDb();
+  const { db } = getDb();
 
   try {
     if (!query) {
-      const tableCheck = await pool.query(
-        "SELECT EXISTS (" +
-        "  SELECT FROM information_schema.tables " +
-        "  WHERE table_name = 'story_chunks'" +
-        ");"
-      );
-
-      const isReady = tableCheck.rows[0].exists;
-
       return NextResponse.json({
-        message: isReady
-          ? 'Postgres Hybrid Search with RRF is ready.'
-          : 'Database table not found. Please run the /api/ingest route first.',
+        message: 'Postgres Hybrid Search with RRF is ready.',
         usage: 'Add ?q=your_search_query to perform a Hybrid RRF search.',
       });
     }
@@ -43,93 +33,85 @@ export async function GET(request: Request) {
     const embedding = result.embedding.values;
 
     const searchTerm = `%${query}%`;
-    const vectorParam = "[" + embedding.join(',') + "]";
     const rrfK = 60; // Standard RRF constant parameter
 
-    // SQL-Native Reciprocal Rank Fusion (RRF) Combining Lexical (tsvector) + Semantic (pgvector)
-    const dbQuery = `
-      WITH 
-      -- 1. Lexical / Keyword Search Ranking
-      lexical_ranks AS (
-        SELECT 
-          story_id,
-          slug,
-          title,
-          excerpt,
-          chunk_text,
-          ROW_NUMBER() OVER (
+    // 1. Drizzle ORM Lexical Rank CTE
+    const lexicalRanks = db.$with('lexical_ranks').as(
+      db
+        .select({
+          storyId: schema.storyChunks.storyId,
+          slug: schema.storyChunks.slug,
+          title: schema.storyChunks.title,
+          excerpt: schema.storyChunks.excerpt,
+          chunkText: schema.storyChunks.chunkText,
+          lexicalRank: sql<number>`ROW_NUMBER() OVER (
             ORDER BY 
               (
-                (LENGTH(LOWER(chunk_text)) - LENGTH(REPLACE(LOWER(chunk_text), LOWER($1), ''))) 
-                / GREATEST(LENGTH($1), 1)
+                (LENGTH(LOWER(${schema.storyChunks.chunkText})) - LENGTH(REPLACE(LOWER(${schema.storyChunks.chunkText}), LOWER(${query}), ''))) 
+                / GREATEST(LENGTH(${query}), 1)
               ) DESC,
-              ts_rank(to_tsvector('english', title || ' ' || excerpt || ' ' || chunk_text), plainto_tsquery('english', $1)) DESC
-          ) as lexical_rank
-        FROM story_chunks
-        WHERE to_tsvector('english', title || ' ' || excerpt || ' ' || chunk_text) @@ plainto_tsquery('english', $1)
-           OR title ILIKE $2 OR excerpt ILIKE $2 OR chunk_text ILIKE $2
-      ),
+              ts_rank(to_tsvector('english', ${schema.storyChunks.title} || ' ' || ${schema.storyChunks.excerpt} || ' ' || ${schema.storyChunks.chunkText}), plainto_tsquery('english', ${query})) DESC
+          )`.as('lexical_rank'),
+        })
+        .from(schema.storyChunks)
+        .where(
+          or(
+            sql`to_tsvector('english', ${schema.storyChunks.title} || ' ' || ${schema.storyChunks.excerpt} || ' ' || ${schema.storyChunks.chunkText}) @@ plainto_tsquery('english', ${query})`,
+            ilike(schema.storyChunks.title, searchTerm),
+            ilike(schema.storyChunks.excerpt, searchTerm),
+            ilike(schema.storyChunks.chunkText, searchTerm)
+          )
+        )
+    );
 
-      -- 2. Dense Vector Semantic Search Ranking
-      vector_ranks AS (
-        SELECT 
-          story_id,
-          slug,
-          title,
-          excerpt,
-          chunk_text,
-          1 - (embedding <=> $3) as vector_similarity,
-          ROW_NUMBER() OVER (ORDER BY embedding <=> $3 ASC) as vector_rank
-        FROM story_chunks
-      ),
+    // 2. Drizzle ORM Dense Vector Rank CTE
+    const vectorRanks = db.$with('vector_ranks').as(
+      db
+        .select({
+          storyId: schema.storyChunks.storyId,
+          slug: schema.storyChunks.slug,
+          title: schema.storyChunks.title,
+          excerpt: schema.storyChunks.excerpt,
+          chunkText: schema.storyChunks.chunkText,
+          vectorSimilarity: sql<number>`1 - (${cosineDistance(schema.storyChunks.embedding, embedding)})`.as('vector_similarity'),
+          vectorRank: sql<number>`ROW_NUMBER() OVER (ORDER BY ${cosineDistance(schema.storyChunks.embedding, embedding)} ASC)`.as('vector_rank'),
+        })
+        .from(schema.storyChunks)
+    );
 
-      -- 3. Combine both rank pools using Reciprocal Rank Fusion (RRF score = 1/(k + rank_lexical) + 1/(k + rank_vector))
-      combined AS (
-        SELECT 
-          COALESCE(l.story_id, v.story_id) as story_id,
-          COALESCE(l.slug, v.slug) as slug,
-          COALESCE(l.title, v.title) as title,
-          COALESCE(l.excerpt, v.excerpt) as excerpt,
-          COALESCE(l.chunk_text, v.chunk_text) as chunk_text,
-          l.lexical_rank,
-          v.vector_rank,
-          v.vector_similarity,
-          (
-            COALESCE(1.0 / (${rrfK} + l.lexical_rank), 0.0) +
-            COALESCE(1.0 / (${rrfK} + v.vector_rank), 0.0)
-          ) as rrf_score
-        FROM vector_ranks v
-        FULL OUTER JOIN lexical_ranks l 
-          ON v.story_id = l.story_id AND v.chunk_text = l.chunk_text
-      ),
-      
-      -- 4. Deduplicate per story keeping highest scoring paragraph chunk
-      ranked_stories AS (
-        SELECT DISTINCT ON (story_id)
-          story_id,
-          slug,
-          title,
-          excerpt,
-          chunk_text,
-          lexical_rank,
-          vector_rank,
-          COALESCE(vector_similarity, 0) as similarity,
-          rrf_score
-        FROM combined
-        ORDER BY story_id, rrf_score DESC
+    // Expression for calculated RRF score
+    const rrfScoreExpr = sql<number>`(
+      COALESCE(1.0 / (${rrfK} + ${lexicalRanks.lexicalRank}), 0.0) +
+      COALESCE(1.0 / (${rrfK} + ${vectorRanks.vectorRank}), 0.0)
+    )`;
+
+    // 3. Execute Drizzle RRF Fusion Query combining both CTEs
+    const searchResults = await db
+      .with(lexicalRanks, vectorRanks)
+      .select({
+        story_id: sql<string>`COALESCE(${lexicalRanks.storyId}, ${vectorRanks.storyId})`,
+        slug: sql<string>`COALESCE(${lexicalRanks.slug}, ${vectorRanks.slug})`,
+        title: sql<string>`COALESCE(${lexicalRanks.title}, ${vectorRanks.title})`,
+        excerpt: sql<string>`COALESCE(${lexicalRanks.excerpt}, ${vectorRanks.excerpt})`,
+        chunk_text: sql<string>`COALESCE(${lexicalRanks.chunkText}, ${vectorRanks.chunkText})`,
+        lexical_rank: lexicalRanks.lexicalRank,
+        vector_rank: vectorRanks.vectorRank,
+        similarity: sql<number>`COALESCE(${vectorRanks.vectorSimilarity}, 0)`,
+        rrf_score: rrfScoreExpr.as('rrf_score'),
+      })
+      .from(vectorRanks)
+      .fullJoin(
+        lexicalRanks,
+        sql`${vectorRanks.storyId} = ${lexicalRanks.storyId} AND ${vectorRanks.chunkText} = ${lexicalRanks.chunkText}`
       )
-      SELECT * FROM ranked_stories
-      ORDER BY rrf_score DESC
-      LIMIT 3;
-    `;
-
-    const searchResults = await pool.query(dbQuery, [query, searchTerm, vectorParam]);
+      .orderBy(desc(rrfScoreExpr))
+      .limit(3);
 
     return NextResponse.json({
       query: query,
       method: 'Reciprocal Rank Fusion (RRF)',
       rrf_k: rrfK,
-      results: searchResults.rows,
+      results: searchResults,
     });
 
   } catch (error: any) {
