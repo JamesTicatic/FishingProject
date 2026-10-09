@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { Pool } from '@neondatabase/serverless';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { SPECIES_LIST } from '@/data/species';
 import { GEAR_LIST } from '@/data/gear';
 import { getAllStories } from '@/data/stories';
 import { verifyAdminAuth } from '@/lib/auth';
+import { getDb, schema } from '@/db';
+import { eq } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   const auth = verifyAdminAuth(request);
@@ -20,68 +21,26 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'GEMINI_API_KEY is not set.' }, { status: 500 });
   }
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { db, pool } = getDb();
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
 
   try {
+    // Ensure pgvector extension is present
     await pool.query('CREATE EXTENSION IF NOT EXISTS vector;');
-    
-    // Create Species Table
+
+    // Non-destructive Drizzle schema table creation (if not exists)
     await pool.query(
-      "CREATE TABLE IF NOT EXISTS species (" +
-      "  id SERIAL PRIMARY KEY," +
-      "  name VARCHAR(100) UNIQUE NOT NULL" +
-      ");"
-    );
-
-    // Create Gear Table
-    await pool.query(
-      "CREATE TABLE IF NOT EXISTS gear (" +
-      "  id SERIAL PRIMARY KEY," +
-      "  name VARCHAR(100) UNIQUE NOT NULL" +
-      ");"
-    );
-
-    // Create Location Table
-    await pool.query(
-      "CREATE TABLE IF NOT EXISTS location (" +
-      "  id SERIAL PRIMARY KEY," +
-      "  name VARCHAR(255) UNIQUE NOT NULL" +
-      ");"
-    );
-
-    // Ingest Species List
-    for (const speciesName of SPECIES_LIST) {
-      await pool.query(
-        "INSERT INTO species (name) VALUES ($1) ON CONFLICT (name) DO NOTHING;",
-        [speciesName]
-      );
-    }
-
-    // Ingest Gear List
-    for (const gearName of GEAR_LIST) {
-      await pool.query(
-        "INSERT INTO gear (name) VALUES ($1) ON CONFLICT (name) DO NOTHING;",
-        [gearName]
-      );
-    }
-
-    // Ingest Location List
-    const { LOCATION_LIST } = await import('@/data/locations');
-    for (const locationName of LOCATION_LIST) {
-      await pool.query(
-        "INSERT INTO location (name) VALUES ($1) ON CONFLICT (name) DO NOTHING;",
-        [locationName]
-      );
-    }
-
-    // Create Story Chunks Table with species, gear, and location columns
-    await pool.query(
-      "DROP TABLE IF EXISTS stories_embedding;" // Clean up old table
+      "CREATE TABLE IF NOT EXISTS species (id SERIAL PRIMARY KEY, name VARCHAR(100) UNIQUE NOT NULL);"
     );
     await pool.query(
-      "DROP TABLE IF EXISTS story_chunks;\n      CREATE TABLE IF NOT EXISTS story_chunks (" +
+      "CREATE TABLE IF NOT EXISTS gear (id SERIAL PRIMARY KEY, name VARCHAR(100) UNIQUE NOT NULL);"
+    );
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS location (id SERIAL PRIMARY KEY, name VARCHAR(255) UNIQUE NOT NULL);"
+    );
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS story_chunks (" +
       "  id SERIAL PRIMARY KEY," +
       "  story_id VARCHAR(255) NOT NULL," +
       "  slug TEXT NOT NULL," +
@@ -97,28 +56,59 @@ export async function GET(request: Request) {
       ");"
     );
 
+    // Ingest Species List via Drizzle ORM
+    for (const speciesName of SPECIES_LIST) {
+      await db.insert(schema.species)
+        .values({ name: speciesName })
+        .onConflictDoNothing();
+    }
+
+    // Ingest Gear List via Drizzle ORM
+    for (const gearName of GEAR_LIST) {
+      await db.insert(schema.gear)
+        .values({ name: gearName })
+        .onConflictDoNothing();
+    }
+
+    // Ingest Location List via Drizzle ORM
+    const { LOCATION_LIST } = await import('@/data/locations');
+    for (const locationName of LOCATION_LIST) {
+      await db.insert(schema.location)
+        .values({ name: locationName })
+        .onConflictDoNothing();
+    }
+
     const stories = getAllStories();
     let ingestedCount = 0;
     let chunksCount = 0;
 
     for (const story of stories) {
-      // Split content into paragraphs, filtering out empty ones
+      // Non-destructive cleanup: Delete existing chunks for this specific story before re-ingesting
+      await db.delete(schema.storyChunks).where(eq(schema.storyChunks.storyId, story.id));
+
       const paragraphs = story.content.split('\n\n').map(p => p.trim()).filter(Boolean);
 
       for (let i = 0; i < paragraphs.length; i++) {
         const paragraph = paragraphs[i];
-        
-        // Add minimal context to the chunk for better embeddings
         const textToEmbed = "Story Title: " + story.title + "\nParagraph: " + paragraph;
         
         const result = await model.embedContent(textToEmbed);
         const embedding = result.embedding.values;
         
-        await pool.query(
-          "INSERT INTO story_chunks (story_id, slug, title, excerpt, species, gear, location, date, chunk_index, chunk_text, embedding) " +
-          "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);",
-          [story.id, story.slug, story.title, story.excerpt, story.species, story.gear, story.location, story.date, i, paragraph, "[" + embedding.join(',') + "]"]
-        );
+        // Insert paragraph chunk using Drizzle ORM
+        await db.insert(schema.storyChunks).values({
+          storyId: story.id,
+          slug: story.slug,
+          title: story.title,
+          excerpt: story.excerpt,
+          species: story.species,
+          gear: story.gear,
+          location: story.location,
+          date: story.date,
+          chunkIndex: i,
+          chunkText: paragraph,
+          embedding: embedding,
+        });
         chunksCount++;
       }
       ingestedCount++;
@@ -126,7 +116,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Successfully ingested " + ingestedCount + " stories into " + chunksCount + " chunks."
+      message: "Successfully ingested " + ingestedCount + " stories into " + chunksCount + " chunks using Drizzle ORM."
     });
 
   } catch (error: any) {
@@ -134,3 +124,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

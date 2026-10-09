@@ -33,9 +33,20 @@ export default function DashboardPage() {
         fetch(`/api/search-lexical?q=${encodeURIComponent(query)}`)
       ]);
 
-      const dataChunked = await resChunked.json();
-      const dataFull = await resFull.json();
-      const dataLexical = await resLexical.json();
+      const parseJson = async (res: Response) => {
+        try {
+          if (!res.ok) return { results: [] };
+          return await res.json();
+        } catch {
+          return { results: [] };
+        }
+      };
+
+      const [dataChunked, dataFull, dataLexical] = await Promise.all([
+        parseJson(resChunked),
+        parseJson(resFull),
+        parseJson(resLexical)
+      ]);
 
       setResultsChunked(dataChunked.results || []);
       setResultsFull(dataFull.results || []);

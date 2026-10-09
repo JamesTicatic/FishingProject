@@ -28,6 +28,7 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 * **Framework**: Next.js (App Router, Server Components & Client Components)
 * **Styling**: Tailwind CSS
 * **Database**: PostgreSQL with `pgvector` extension (Neon Serverless)
+* **ORM & Migrations**: Drizzle ORM (`drizzle-orm`) & Drizzle Kit versioned migrations (`db/schema.ts`, `db/migrations/`)
 * **AI Embeddings**: Google Gemini API (`gemini-embedding-2`, 3072-dimension vectors)
 * **Analytics**: Vercel Analytics (`@vercel/analytics`)
 * **Language**: TypeScript
@@ -41,8 +42,8 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 | `/api/search` | `GET` | Vector search over paragraph chunks using `pgvector` | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-full` | `GET` | Vector search over full story narratives (baseline) | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-lexical` | `GET` | Full-Text Lexical (Keyword) search with occurrence counting | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, match_count }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
-| `/api/ingest` | `GET` | Drops & recreates `story_chunks` table (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
-| `/api/ingest-full` | `GET` | Drops & recreates `stories_embedding` table (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
+| `/api/ingest` | `GET` | Non-destructive Drizzle ORM ingestion over paragraph chunks (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
+| `/api/ingest-full` | `GET` | Non-destructive Drizzle ORM ingestion over full stories (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 
 ---
 
