@@ -161,8 +161,8 @@ export default function DashboardPage() {
               
               {resultsLexical.length > 0 ? (
                 <ul className="space-y-6">
-                  {resultsLexical.map((res) => (
-                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                  {resultsLexical.map((res, idx) => (
+                    <li key={`${res.story_id}-lexical-${idx}`} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
                       <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
@@ -191,8 +191,8 @@ export default function DashboardPage() {
               
               {resultsChunked.length > 0 ? (
                 <ul className="space-y-6">
-                  {resultsChunked.map((res) => (
-                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                  {resultsChunked.map((res, idx) => (
+                    <li key={`${res.story_id}-chunked-${idx}`} className="border border-slate-100 p-4 rounded-xl bg-slate-50">
                       <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
@@ -221,8 +221,8 @@ export default function DashboardPage() {
               
               {resultsFull.length > 0 ? (
                 <ul className="space-y-6">
-                  {resultsFull.map((res) => (
-                    <li key={res.story_id} className="border border-slate-100 p-4 rounded-xl bg-slate-50 opacity-90">
+                  {resultsFull.map((res, idx) => (
+                    <li key={`${res.story_id}-full-${idx}`} className="border border-slate-100 p-4 rounded-xl bg-slate-50 opacity-90">
                       <Link href={`/stories/${getStorySlug(res)}`} className="font-semibold text-emerald-700 hover:underline">
                         {res.title}
                       </Link>
