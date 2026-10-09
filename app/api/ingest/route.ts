@@ -4,8 +4,14 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { SPECIES_LIST } from '@/data/species';
 import { GEAR_LIST } from '@/data/gear';
 import { getAllStories } from '@/data/stories';
+import { verifyAdminAuth } from '@/lib/auth';
 
 export async function GET(request: Request) {
+  const auth = verifyAdminAuth(request);
+  if (!auth.isAuthorized && auth.response) {
+    return auth.response;
+  }
+
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({ error: 'DATABASE_URL is not set.' }, { status: 500 });
   }

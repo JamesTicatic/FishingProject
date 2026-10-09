@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { checkRateLimit } from './lib/rate-limit';
+import { verifyAdminAuth } from './lib/auth';
 
 export function middleware(request: NextRequest) {
+  // Protect /api/ingest* endpoints with Admin Auth
+  if (request.nextUrl.pathname.startsWith('/api/ingest')) {
+    const auth = verifyAdminAuth(request);
+    if (!auth.isAuthorized && auth.response) {
+      return auth.response;
+    }
+  }
+
   // Only apply rate limiting to API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const ip = 

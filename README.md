@@ -41,8 +41,8 @@ An interactive benchmark lab comparing three different retrieval paradigms side-
 | `/api/search` | `GET` | Vector search over paragraph chunks using `pgvector` | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-full` | `GET` | Vector search over full story narratives (baseline) | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, similarity }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 | `/api/search-lexical` | `GET` | Full-Text Lexical (Keyword) search with occurrence counting | • `200 OK`: `{ query, results: [{ story_id, title, excerpt, chunk_text, match_count }] }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
-| `/api/ingest` | `GET` | Drops & recreates `story_chunks` table and embeds story paragraphs | • `200 OK`: `{ success: true, message }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
-| `/api/ingest-full` | `GET` | Drops & recreates `stories_embedding` table and embeds full stories | • `200 OK`: `{ success: true, message }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
+| `/api/ingest` | `GET` | Drops & recreates `story_chunks` table (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
+| `/api/ingest-full` | `GET` | Drops & recreates `stories_embedding` table (Requires Admin Auth Header) | • `200 OK`: `{ success: true, message }`<br>• `401 Unauthorized`: `{ error }`<br>• `429 Too Many Requests`: `{ error }`<br>• `500 Server Error`: `{ error }` |
 
 ---
 
