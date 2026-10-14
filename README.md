@@ -13,10 +13,11 @@ My personal fishing blog making use of a **search comparison laboratory**. Built
 * **Pagination**: Grid pagination limiting display to 6 stories per page for clean browsing.
 
 ### 🔬 Search Comparison Dashboard (`/dashboard`)
-An interactive benchmark lab comparing three different retrieval paradigms side-by-side in real time:
+An interactive benchmark lab comparing four different retrieval paradigms side-by-side in real time:
 1. **Lexical / Keyword Search (`/api/search-lexical`)**: Traditional text search using PostgreSQL `tsvector` and `ILIKE`. Counts exact keyword occurrences across stories.
 2. **Chunked Paragraph Vector Search (`/api/search`)**: Splitting stories into paragraph chunks to prevent semantic dilution and pinpoint fine details.
 3. **Full-Article Vector Search (`/api/search-full`)**: Baseline model embedding the entire story narrative into a single vector, capturing average semantic meaning.
+4. **Hybrid Search with Reciprocal Rank Fusion (`/api/search-hybrid`)**: Combines keyword search (PostgreSQL `tsvector`) and semantic vector search (`pgvector`) into a unified ranking using Reciprocal Rank Fusion (RRF, $k=60$). RRF scores documents by summing their reciprocal rank positions ($1 / (k + \text{rank})$) across both retrieval methods, balancing exact keyword precision with semantic relevance without requiring score normalization across different scales.
 
 ### 🛡️ Production & Security Safeguards
 * **In-Memory Rate Limiter (`lib/rate-limit.ts`)**: Throttles API access to **60 requests per minute per IP**, protecting Gemini API quotas and database connection pools from bot abuse.
